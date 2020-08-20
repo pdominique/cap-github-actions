@@ -1,0 +1,47 @@
+# Build Multitarget Application & Deploy it to Cloud Foundry
+name: Build MTA & Deploy it to CF
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12
+    - name: Install MTA Build Tool
+      run: npm install -g mbt
+    - name: Build MTA
+      run: mbt build -p cf
+    - name: Upload Artifact
+      uses: actions/upload-artifact@master	
+      with:	
+        name: mta
+        path: ./mta_archives/cap-github-actions_1.0.0.mtar
+        
+  deploy:
+     needs: build
+     runs-on: ubuntu-latest
+     steps:
+       - name: Download Artifact
+         uses: actions/download-artifact@master
+         with:
+           name: mta
+           path: ./
+       - name: Deploy to Cloud Foundry
+         uses: guerric-p/cf-cli-action@master
+         with:
+           cf_api: ${{ secrets.CF_API }}
+           cf_username: ${{ secrets.CF_USERNAME }}
+           cf_password: ${{ secrets.CF_PASSWORD }}
+           cf_org: ${{ secrets.CF_ORG }}
+           cf_space: ${{ secrets.CF_SPACE }}
+           command: deploy ./cap-github-actions_1.0.0.mtar -f
