@@ -1,5 +1,7 @@
 # DevOps: CAP CI/CD with GitHub Actions
 
+Blog post on SAP Community Network: https://blogs.sap.com/2020/08/20/devops-cap-ci-cd-with-github-actions/
+
 ## Initial Setup
 
 ### Create a new cap project
