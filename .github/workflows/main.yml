@@ -19,6 +19,10 @@ jobs:
         node-version: 12
     - name: Install MTA Build Tool
       run: npm install -g mbt
+    # Do not generate package-lock.json
+    # See https://blogs.sap.com/2020/07/07/escaping-eintegrity-hell/
+    - name: Disable package-lock.json
+      run: npm config set package-lock false
     - name: Build MTA
       run: mbt build -p cf
     - name: Upload Artifact
